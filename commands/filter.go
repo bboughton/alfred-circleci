@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"encoding/xml"
@@ -8,16 +8,17 @@ import (
 
 	"github.com/bboughton/alfred-circleci/alfred"
 	"github.com/bboughton/alfred-circleci/circle"
+	"github.com/bboughton/alfred-circleci/cli"
 	"github.com/bboughton/alfred-circleci/filter"
 	"github.com/renstrom/fuzzysearch/fuzzy"
 )
 
-type FilterCommand struct {
+type Filter struct {
 	Circle *circle.Client
 }
 
-func (c FilterCommand) Run(args []string) int {
-	args = strings.Split(args[0], " ")
+func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
+	args := strings.Split(in.Args[0], " ")
 
 	var name string
 	if len(args) > 0 {
@@ -55,7 +56,7 @@ func (c FilterCommand) Run(args []string) int {
 			})
 		}
 	} else if len(name) > 0 {
-		projects := c.Circle.FindProjects(name)
+		projects := f.Circle.FindProjects(name)
 		for _, proj := range projects {
 			resp.AddItem(alfred.Item{
 				Title: proj.Name,
@@ -67,17 +68,35 @@ func (c FilterCommand) Run(args []string) int {
 	fmt.Print(xml.Header)
 	if err := xml.NewEncoder(os.Stdout).Encode(resp); err != nil {
 		fmt.Println(err)
-		return 1
+		out.ExitWith(1)
 	}
-	return 0
-}
-
-type CommandLoader interface {
-	Load() QueryCommands
 }
 
 func authenticated() bool {
 	file, err := os.Open("auth.json")
 	file.Close()
 	return !os.IsNotExist(err)
+}
+
+type QueryCommand struct {
+	Title string
+	Arg   string
+}
+
+type QueryCommands []QueryCommand
+
+func (c QueryCommands) Len() int {
+	return len(c)
+}
+
+func (c QueryCommands) Index(i int) string {
+	return c[i].Title
+}
+
+func (c *QueryCommands) Remove(i int) {
+	*c = append([]QueryCommand(*c)[:i], []QueryCommand(*c)[i+1:]...)
+}
+
+func (c *QueryCommands) Add(cmd QueryCommand) {
+	*c = append(*c, cmd)
 }

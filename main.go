@@ -6,6 +6,7 @@ import (
 
 	"github.com/bboughton/alfred-circleci/circle"
 	"github.com/bboughton/alfred-circleci/cli"
+	"github.com/bboughton/alfred-circleci/commands"
 )
 
 const (
@@ -20,13 +21,27 @@ const (
 )
 
 func main() {
-	cmd := cli.NewCommandHandler(InvalidCommand{})
+	cmd := cli.NewSubCommandHandler()
 
+	// Filter command
 	auth := LoadAuth(authPath)
-	cmd.Handle("filter", FilterCommand{
+	cmd.Handle("filter", commands.Filter{
 		Circle: circle.NewClient(auth.Token, cachePath, ttl),
 	})
-	cmd.Handle("run", RunCommand{})
 
-	os.Exit(cmd.Run(os.Args[1:]))
+	// Run Command
+	run := cli.NewSubCommandHandler()
+	run.Handle("open", commands.Open{})
+	run.Handle("login", commands.Login{
+		AuthPath: authPath,
+	})
+	run.Handle("clearcache", commands.Clearcache{
+		CachePath: cachePath,
+	})
+	run.Handle("logout", commands.Logout{
+		AuthPath: authPath,
+	})
+	cmd.Handle("run", run)
+
+	os.Exit(cli.Run(cmd))
 }
