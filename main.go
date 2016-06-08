@@ -25,8 +25,9 @@ func main() {
 
 	// Filter command
 	auth := LoadAuth(authPath)
+	client := circle.NewClient(auth.Token, cachePath, ttl)
 	cmd.Handle("filter", commands.Filter{
-		Circle: circle.NewClient(auth.Token, cachePath, ttl),
+		Circle: client,
 	})
 
 	// Run Command
@@ -34,6 +35,9 @@ func main() {
 	run.Handle("open", commands.Open{})
 	run.Handle("login", commands.Login{
 		AuthPath: authPath,
+	})
+	run.Handle("loadcache", commands.Loadcache{
+		Circle: client,
 	})
 	run.Handle("clearcache", commands.Clearcache{
 		CachePath: cachePath,
