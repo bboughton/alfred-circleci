@@ -9,7 +9,8 @@ clean:
 	@$(RM) $(BIN)
 
 install: build
-	@mkdir -p $(INSTALL_DIR)/bin
+	@mkdir -p $(INSTALL_DIR)/{bin,etc}
 	@install $(BIN) $(INSTALL_DIR)/bin/$(BIN)
+	@install local.alfred-circleci.load-cache.plist $(INSTALL_DIR)/etc/
 
 .PHONY: build clean install
