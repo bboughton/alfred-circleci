@@ -2,7 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
+	"fmt"
 	"os"
+
+	"github.com/bboughton/alfred-circleci/alfred"
+	"github.com/bboughton/alfred-circleci/cli"
 )
 
 type Auth struct {
@@ -35,4 +40,31 @@ func SaveAuth(path string, auth Auth) error {
 	}
 
 	return nil
+}
+
+type AuthHandler struct {
+	Auth    Auth
+	Handler cli.NewHandler
+}
+
+func (h AuthHandler) Exec(out cli.OutputWriter, in *cli.Input) {
+	args := in.Args
+	resp := alfred.NewResponse()
+	if h.Auth.Token == "" {
+		var token string
+		if len(args) > 1 {
+			token = args[1]
+		}
+		resp.AddItem(alfred.Item{
+			Title: "/login",
+			Arg:   "login " + token,
+		})
+		fmt.Print(xml.Header)
+		if err := xml.NewEncoder(os.Stdout).Encode(resp); err != nil {
+			fmt.Println(err)
+			out.ExitWith(1)
+		}
+	} else {
+		h.Handler.Exec(out, in)
+	}
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"time"
 
@@ -10,24 +11,39 @@ import (
 )
 
 const (
-	// path to cache file
-	cachePath string = "cache.json"
-
-	// path to auth file
-	authPath string = "auth.json"
-
-	// how long to keep cache
-	ttl time.Duration = 4 * time.Hour
+	FOUR_HOURS = 14400
 )
 
 func main() {
+	var (
+		// path to cache file
+		cachePath string
+
+		// path to auth file
+		authPath string
+
+		// how long to keep cache
+		ttl        time.Duration
+		ttlSeconds int
+	)
+
+	flag.StringVar(&cachePath, "cache", "cache.json", "path to cache file")
+	flag.StringVar(&authPath, "auth", "auth.json", "path to auth file")
+	flag.IntVar(&ttlSeconds, "ttl", FOUR_HOURS, "number of seconds to keep the cache")
+	flag.Parse()
+
+	ttl = time.Duration(ttlSeconds) * time.Second
+
 	cmd := cli.NewSubCommandHandler()
 
 	// Filter command
 	auth := LoadAuth(authPath)
 	client := circle.NewClient(auth.Token, cachePath, ttl)
-	cmd.Handle("filter", commands.Filter{
-		Circle: client,
+	cmd.Handle("filter", AuthHandler{
+		Auth: auth,
+		Handler: commands.Filter{
+			Circle: client,
+		},
 	})
 
 	// Run Command
@@ -36,8 +52,11 @@ func main() {
 	run.Handle("login", commands.Login{
 		AuthPath: authPath,
 	})
-	run.Handle("loadcache", commands.Loadcache{
-		Circle: client,
+	run.Handle("loadcache", AuthHandler{
+		Auth: auth,
+		Handler: commands.Loadcache{
+			Circle: client,
+		},
 	})
 	run.Handle("clearcache", commands.Clearcache{
 		CachePath: cachePath,
@@ -47,5 +66,6 @@ func main() {
 	})
 	cmd.Handle("run", run)
 
-	os.Exit(cli.Run(cmd))
+	app := cli.New(cmd)
+	os.Exit(app.Run(flag.Args()))
 }

@@ -26,16 +26,7 @@ func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
 	}
 
 	resp := alfred.NewResponse()
-	if !authenticated() {
-		var token string
-		if len(args) > 1 {
-			token = args[1]
-		}
-		resp.AddItem(alfred.Item{
-			Title: "/login",
-			Arg:   "login " + token,
-		})
-	} else if string([]rune(name)[0]) == "/" {
+	if string([]rune(name)[0]) == "/" {
 		cmds := QueryCommands{
 			{
 				Title: "/logout",
@@ -70,12 +61,6 @@ func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
 		fmt.Println(err)
 		out.ExitWith(1)
 	}
-}
-
-func authenticated() bool {
-	file, err := os.Open("auth.json")
-	file.Close()
-	return !os.IsNotExist(err)
 }
 
 type QueryCommand struct {
