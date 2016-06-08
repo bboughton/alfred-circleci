@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
+	"os/user"
 	"time"
 
 	"github.com/bboughton/alfred-circleci/circle"
@@ -27,8 +29,14 @@ func main() {
 		ttlSeconds int
 	)
 
-	flag.StringVar(&cachePath, "cache", "cache.json", "path to cache file")
-	flag.StringVar(&authPath, "auth", "auth.json", "path to auth file")
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	flag.StringVar(&cachePath, "cache", fmt.Sprintf("%s/.cache/alfred-circleci/cache.json", usr.HomeDir), "path to cache file")
+	flag.StringVar(&authPath, "auth", fmt.Sprintf("%s/.config/alfred-circleci/auth.json", usr.HomeDir), "path to auth file")
 	flag.IntVar(&ttlSeconds, "ttl", FOUR_HOURS, "number of seconds to keep the cache")
 	flag.Parse()
 
