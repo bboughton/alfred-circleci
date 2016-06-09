@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"os"
 
@@ -55,12 +54,9 @@ func (h AuthHandler) Exec(out cli.OutputWriter, in *cli.Input) {
 		if len(args) > 1 {
 			token = args[1]
 		}
-		resp.AddItem(alfred.Item{
-			Title: "/login",
-			Arg:   "login " + token,
-		})
-		fmt.Print(xml.Header)
-		if err := xml.NewEncoder(os.Stdout).Encode(resp); err != nil {
+		resp.AddItem(alfred.NewItem("/login", "login "+token))
+		err := alfred.WriteResponse(os.Stdout, resp)
+		if err != nil {
 			fmt.Println(err)
 			out.ExitWith(1)
 		}

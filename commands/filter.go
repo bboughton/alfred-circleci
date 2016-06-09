@@ -1,10 +1,8 @@
 package commands
 
 import (
-	"encoding/xml"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/bboughton/alfred-circleci/alfred"
 	"github.com/bboughton/alfred-circleci/circle"
@@ -18,15 +16,13 @@ type Filter struct {
 }
 
 func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
-	args := strings.Split(in.Args[0], " ")
-
 	var name string
-	if len(args) > 0 {
-		name = args[0]
+	if len(in.Args) > 0 {
+		name = in.Args[0]
 	}
 
 	resp := alfred.NewResponse()
-	if string([]rune(name)[0]) == "/" {
+	if len(name) > 0 && string([]rune(name)[0]) == "/" {
 		cmds := QueryCommands{
 			{
 				Title: "/logout",
@@ -41,23 +37,17 @@ func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
 		filter.Filter(name, &cmds, fuzzy.Match)
 
 		for _, cmd := range cmds {
-			resp.AddItem(alfred.Item{
-				Title: cmd.Title,
-				Arg:   cmd.Arg,
-			})
+			resp.AddItem(alfred.NewItem(cmd.Title, cmd.Arg))
 		}
 	} else if len(name) > 0 {
 		projects := f.Circle.FindProjects(name)
 		for _, proj := range projects {
-			resp.AddItem(alfred.Item{
-				Title: proj.Name,
-				Arg:   "open " + proj.URL,
-			})
+			resp.AddItem(alfred.NewItem(proj.Name, "open "+proj.URL))
 		}
 	}
 
-	fmt.Print(xml.Header)
-	if err := xml.NewEncoder(os.Stdout).Encode(resp); err != nil {
+	err := alfred.WriteResponse(os.Stdout, resp)
+	if err != nil {
 		fmt.Println(err)
 		out.ExitWith(1)
 	}
