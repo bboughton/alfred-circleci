@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -17,7 +18,7 @@ func NewClient(token string) *Client {
 	}
 }
 
-func (c Client) ListRepos(page int) []Repo {
+func (c Client) ListRepos(page int) ([]Repo, error) {
 	var (
 		host         string = "https://circleci.com"
 		basePath     string = "/api/v1"
@@ -27,7 +28,7 @@ func (c Client) ListRepos(page int) []Repo {
 
 	req, err := http.NewRequest(http.MethodGet, host+basePath+resourcePath, nil)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	values := make(url.Values)
@@ -40,18 +41,18 @@ func (c Client) ListRepos(page int) []Repo {
 	client := http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil
+		return nil, errors.New(fmt.Sprintf("unexpected response code %d", resp.StatusCode))
 	}
 
 	var repos []Repo
 	if err = json.NewDecoder(resp.Body).Decode(&repos); err != nil {
-		return nil
+		return nil, err
 	}
 
-	return repos
+	return repos, nil
 }

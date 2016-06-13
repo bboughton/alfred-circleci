@@ -26,11 +26,14 @@ func NewClient(token, path string, ttl time.Duration) *Client {
 	}
 }
 
-func (c Client) FindProjects(name string) Projects {
+func (c Client) FindProjects(name string) (Projects, error) {
 	// load all repos and map them to projects
-	all := c.loader.LoadProject()
+	all, err := c.loader.LoadProject()
+	if err != nil {
+		return nil, err
+	}
 
 	filter.Filter(name, &all, fuzzy.Match)
 
-	return all
+	return all, nil
 }

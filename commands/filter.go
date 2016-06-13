@@ -40,7 +40,12 @@ func (f Filter) Exec(out cli.OutputWriter, in *cli.Input) {
 			resp.AddItem(alfred.NewItem(cmd.Title, cmd.Arg))
 		}
 	} else if len(name) > 0 {
-		projects := f.Circle.FindProjects(name)
+		projects, err := f.Circle.FindProjects(name)
+		if err != nil {
+			fmt.Println(err)
+			out.ExitWith(1)
+			return
+		}
 		for _, proj := range projects {
 			resp.AddItem(alfred.NewItem(proj.Name, "open "+proj.URL))
 		}
