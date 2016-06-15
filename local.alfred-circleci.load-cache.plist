@@ -6,9 +6,7 @@
 		<string>local.alfred-circleci.load-cache</string>
 		<key>ProgramArguments</key>
 		<array>
-			<string>/usr/local/opt/alfred-circleci/bin/alfred-circleci</string>
-			<string>run</string>
-			<string>loadcache</string>
+			<string>/usr/local/opt/alfred-circleci/bin/load_cache.sh</string>
 		</array>
 		<key>StartCalendarInterval</key>
 		<dict>
