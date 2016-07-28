@@ -11,7 +11,7 @@
 		<key>StartCalendarInterval</key>
 		<dict>
 			<key>Hour</key>
-			<integer>5</integer>
+			<integer>2</integer>
 		</dict>
 	</dict>
 </plist>
