@@ -32,9 +32,10 @@ func (c Client) ListRepos(page int) ([]Repo, error) {
 	}
 
 	values := make(url.Values)
-	values.Set("circle-token", c.Token)
 	values.Set("page", fmt.Sprintf("%d", page))
 	req.URL.RawQuery = values.Encode()
+
+	req.SetBasicAuth(c.Token, "")
 
 	req.Header.Set("Accept", "application/json")
 
