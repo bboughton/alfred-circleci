@@ -1,17 +1,20 @@
-BIN = alfred-circleci
-GO = go
+BINARY=alfred-circleci
+PACKAGE=github.com/bboughton/alfred-circleci
+
+GOCMD=go
 INSTALL_DIR = /usr/local/opt/alfred-circleci
 
+.PHONY: build
 build: 
-	@$(GO) build -o $(BIN)
+	@$(GOCMD) build -o $(BINARY) $(PACKAGE)
 
+.PHONY: clean
 clean: 
-	@$(RM) $(BIN)
+	@$(RM) $(BINARY)
 
+.PHONY: install
 install: build
 	@mkdir -p $(INSTALL_DIR)/{bin,etc}
-	@install $(BIN) $(INSTALL_DIR)/bin/$(BIN)
+	@install $(BINARY) $(INSTALL_DIR)/bin/$(BINARY)
 	@install local.alfred-circleci.load-cache.plist $(INSTALL_DIR)/etc/
 	@install load_cache.sh $(INSTALL_DIR)/bin/load_cache.sh
-
-.PHONY: build clean install
