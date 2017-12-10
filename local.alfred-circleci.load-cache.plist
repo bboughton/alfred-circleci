@@ -13,5 +13,7 @@
 			<key>Minute</key>
 			<integer>15</integer>
 		</dict>
+		<key>Nice</key>
+		<integer>15</integer>
 	</dict>
 </plist>
