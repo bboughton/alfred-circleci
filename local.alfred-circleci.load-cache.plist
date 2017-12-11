@@ -15,5 +15,7 @@
 		</dict>
 		<key>Nice</key>
 		<integer>15</integer>
+		<key>StandardOutPath</key>
+		<string>/Users/brian.boughton/Library/Logs/alfred_circleci.log</string>
 	</dict>
 </plist>
