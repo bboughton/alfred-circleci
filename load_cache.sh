@@ -6,9 +6,16 @@ log() {
 	echo $(date +%Y%m%dt%H%M%S) "$@"
 }
 
+clearcache() {
+	/usr/local/opt/alfred-circleci/bin/alfred-circleci run clearcache
+}
+
 loadcache() {
 	/usr/local/opt/alfred-circleci/bin/alfred-circleci run loadcache
 }
+
+log "clearing cache"
+clearcache
 
 log "retrieving projects from circle ci"
 n=0
