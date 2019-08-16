@@ -43,6 +43,7 @@ func Save(path string, item Item) {
 	}
 
 	if err != nil {
+		// TODO handle error
 		return
 	}
 	defer file.Close()
