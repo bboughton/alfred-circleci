@@ -5,7 +5,7 @@ import (
 
 	"github.com/bboughton/alfred-circleci/circle/api"
 	"github.com/bboughton/alfred-circleci/filter"
-	"github.com/renstrom/fuzzysearch/fuzzy"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 // Client is used to access the circle api

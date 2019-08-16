@@ -8,7 +8,7 @@ import (
 	"github.com/bboughton/alfred-circleci/circle"
 	"github.com/bboughton/alfred-circleci/cli"
 	"github.com/bboughton/alfred-circleci/filter"
-	"github.com/renstrom/fuzzysearch/fuzzy"
+	"github.com/lithammer/fuzzysearch/fuzzy"
 )
 
 type Filter struct {
